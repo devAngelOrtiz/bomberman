@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<script type = "text/javascript">
+	window.onload = function(){
+		var canvas = document.getElementById("miCanvas"),
+			context = canvas.getContext("2d"),
+			fondo = new Image(),
+			p1=new Image(),
+			starp=new Image(),
+			endfail=new Image(),
+			endwin=new Image();
+
+		context.font="30px sans-serif";
+		fondo.src = "img/bloques.png";
+		p1.src = "p1.png";
+		starp.src = "inicio.png"
+		endfail.src= "gameover.png";
+		endwin.src="final.png";
+		starp.addEventListener('load',menu,false);
+		//fondo.addEventListener('load',dibujaescenario,false);
+		//p1.addEventListener('load',dibujaP1,false);
+		
+
+		var gameover=1,ancho=16,alto=32,
+			actualFrame=0,
+			filas = 15,columnas = 19,
+			numTilesImagen = 8,tamTile = 32,
+			escenario = [
+				[ 	6,	6,	6,	6,	6,	6,	6,	6,	6,	6,	6,	6,	6,	6,	6,	6,	6,	6,	6],
+				[ 	6,	7,	7,	7,	7,	7,	57,	7,	7,	7,	57,	7,	7,	7,	57,	7,	57,	7,	6],
+				[ 	6,	7,	6,	57,	6,	7,	6,	57,	6,	57,	6,	7,	6,	7,	6,	57,	6,	57,	6],
+				[ 	6,	57,	57,	7,	7,	7,	7,	7,	57,	57,	7,	7,	7,	57,	7,	7,	7,	7,	6],
+				[ 	6,	7,	6,	7,	6,	7,	6,	57,	6,	7,	6,	7,	6,	7,	6,	57,	6,	7,	6],
+				[ 	6,	7,	57,	7,	7,	7,	7,	57,	7,	57,	57,	57,	7,	57,	7,	7,	7,	57,	6],
+				[ 	6,	7,	6,	7,	6,	57,	6,	7,	6,	7,	6,	7,	6,	7,	6,	57,	6,	7,	6],
+				[ 	6,	7,	7,	57,	57,	7,	57,	7,	57,	7,	7,	57,	7,	57,	7,	7,	7,	57,	6],
+				[ 	6,	57,	6,	7,	6,	57,	6,	57,	6,	57,	6,	7,	6,	7,	6,	7,	6,	7,	6],
+				[ 	6,	7,	57,	7,	7,	7,	57,	57,	7,	7,	7,	57,	7,	57,	7,	57,	7,	7,	6],
+				[ 	6,	7,	6,	7,	6,	7,	6,	7,	6,	57,	6,	7,	6,	7,	6,	57,	6,	57,	6],
+				[ 	6,	57,	7,	57,	7,	7,	57,	7,	57,	7,	7,	57,	7,	7,	7,	7,	7,	7,	6],
+				[ 	6,	7,	6,	7,	6,	7,	6,	7,	6,	7,	6,	7,	6,	57,	6,	7,	6,	57,	6],
+				[ 	6,	57,	57,	57,	7,	7,	57,	57,	7,	57,	7,	57,	7,	57,	7,	7,	57,	57,	6],
+				[ 	6,	6,	6,	6,	6,	6,	6,	6,	6,	6,	6,	6,	6,	6,	6,	6,	6,	6,	6]
+			],
+			paso=8,
+			player={x:32,		y:32,	alto:20,	ancho:25,	dir:0,	die:0,	lives:3,	puntuacion:0},
+			enemigos=new Array();
+			enemigos[0]={x:32,	y:128,	alto:28,	ancho:28,	dir:4,	die:0};
+			enemigos[1]={x:128,	y:416,	alto:28,	ancho:28,	dir:6,	die:0};
+			enemigos[2]={x:224,	y:96,	alto:28,	ancho:28,	dir:4,	die:0};
+			enemigos[3]={x:448,	y:416, 	alto:28,	ancho:28,	dir:6,	die:0};
+			enemigos[4]={x:448,	y:96, 	alto:28,	ancho:28,	dir:6,	die:0};
+
+		var res={	img:null, 	x:0, 	y:0,	margen:20},
+			resene=new Array();
+			resene[0]={	img:null, 	x:0, 	y:0,	margen:40};
+			resene[1]={	img:null, 	x:0, 	y:0,	margen:20};
+			resene[2]={	img:null, 	x:0, 	y:0,	margen:20};
+			resene[3]={	img:null, 	x:0, 	y:0,	margen:20};
+			resene[4]={	img:null, 	x:0, 	y:0,	margen:20};
+		var audio=new Array();
+			audio[0]=new Audio();//inicio
+			audio[0].src="audio/a0.mp3";
+			audio[0].loop = true;
+			audio[0].addEventListener('load',audio[0].play(),false);
+			audio[1]=new Audio();//fondo
+			audio[1].src="audio/a1.mp3";
+			audio[1].loop = true;
+			audio[2]=new Audio();//fin del juego 
+			audio[2].src="audio/a2.mp3";
+			audio[3]=new Audio();//gameover
+			audio[3].src="audio/a3.mp3";
+			audio[4]=new Audio();//bomba
+			audio[4].src="audio/a4.wav";
+			audio[5]=new Audio();//muerte
+			audio[5].src="audio/a5.mp3";
+		var iainterval;
+
+		function menu()
+		{
+			context.drawImage(starp, 0, 0,canvas.width,canvas.height);
+		}
+
+		function inicio()
+		{
+			escenario = [
+				[ 	6,	6,	6,	6,	6,	6,	6,	6,	6,	6,	6,	6,	6,	6,	6,	6,	6,	6,	6],
+				[ 	6,	7,	7,	7,	7,	7,	57,	7,	7,	7,	57,	7,	7,	7,	57,	7,	57,	7,	6],
+				[ 	6,	7,	6,	57,	6,	7,	6,	57,	6,	57,	6,	7,	6,	7,	6,	57,	6,	57,	6],
+				[ 	6,	57,	57,	7,	7,	7,	7,	7,	57,	57,	7,	7,	7,	57,	7,	7,	7,	7,	6],
+				[ 	6,	7,	6,	7,	6,	7,	6,	57,	6,	7,	6,	7,	6,	7,	6,	57,	6,	7,	6],
+				[ 	6,	7,	57,	7,	7,	7,	7,	57,	7,	57,	57,	57,	7,	57,	7,	7,	7,	57,	6],
+				[ 	6,	7,	6,	7,	6,	57,	6,	7,	6,	7,	6,	7,	6,	7,	6,	57,	6,	7,	6],
+				[ 	6,	7,	7,	57,	57,	7,	57,	7,	57,	7,	7,	57,	7,	57,	7,	7,	7,	57,	6],
+				[ 	6,	57,	6,	7,	6,	57,	6,	57,	6,	57,	6,	7,	6,	7,	6,	7,	6,	7,	6],
+				[ 	6,	7,	57,	7,	7,	7,	57,	57,	7,	7,	7,	57,	7,	57,	7,	57,	7,	7,	6],
+				[ 	6,	7,	6,	7,	6,	7,	6,	7,	6,	57,	6,	7,	6,	7,	6,	57,	6,	57,	6],
+				[ 	6,	57,	7,	57,	7,	7,	57,	7,	57,	7,	7,	57,	7,	7,	7,	7,	7,	7,	6],
+				[ 	6,	7,	6,	7,	6,	7,	6,	7,	6,	7,	6,	7,	6,	57,	6,	7,	6,	57,	6],
+				[ 	6,	57,	57,	57,	7,	7,	57,	57,	7,	57,	7,	57,	7,	57,	7,	7,	57,	57,	6],
+				[ 	6,	6,	6,	6,	6,	6,	6,	6,	6,	6,	6,	6,	6,	6,	6,	6,	6,	6,	6]
+			],
+			enemigos[0]={x:32,	y:128,	alto:31,	ancho:31,	dir:4,	die:0};
+			enemigos[1]={x:128,	y:416,	alto:31,	ancho:31,	dir:6,	die:0};
+			enemigos[2]={x:224,	y:96,	alto:31,	ancho:31,	dir:4,	die:0};
+			enemigos[3]={x:448,	y:416, 	alto:31,	ancho:31,	dir:6,	die:0};
+			enemigos[4]={x:448,	y:96, 	alto:31,	ancho:31,	dir:6,	die:0};
+			player={x:32,		y:32,	alto:20,	ancho:25,	dir:0,	die:0,	lives:3,	puntuacion:0};
+			res={	img:null, 	x:0, 	y:0,	margen:20};
+			resene[0]={	img:null, 	x:0, 	y:0,	margen:40};
+			resene[1]={	img:null, 	x:0, 	y:0,	margen:20};
+			resene[2]={	img:null, 	x:0, 	y:0,	margen:20};
+			resene[3]={	img:null, 	x:0, 	y:0,	margen:20};
+			resene[4]={	img:null, 	x:0, 	y:0,	margen:20};
+			actualFrame=0;
+			gameover=0;
+			dibujaescenario();
+			dibujascore(true);
+			dibujaP1();
+			dibujaenemigos();
+			iainterval=setInterval(i_a_enemigos,1000);
+		}
+
+		function failgame()
+		{
+			audio[3].play();
+			gameover=1;
+			clearInterval(iainterval);
+			context.drawImage(endfail, 0, 0,canvas.width,canvas.height);
+		}
+
+		function finishgame()
+		{
+			audio[2].play();
+			gameover=1;
+			clearInterval(iainterval);
+			context.drawImage(endwin, 0, 0,canvas.width,canvas.height);
+		}
+
+		function bomba()
+		{
+			var x=(player.x / tamTile) | 0,
+				y=(player.y / tamTile) | 0,
+				xn=((player.x + player.ancho)/ tamTile) | 0,
+				yn=((player.y + player.alto)/ tamTile) | 0;
+			if(player.dir==0 && escenario[yn+1][x]==7 && escenario[yn+1][xn]==7)//abajo
+				dibujabomba(x,yn+1,0);
+			if(player.dir==1 && escenario[y-1][x]==7 && escenario[y-1][xn]==7)//arriba
+				dibujabomba(x,y-1,0);
+			if(player.dir==2 && escenario[y][xn+1]==7 && escenario[yn][xn+1]==7)//derecha
+				dibujabomba(xn+1,y,0);
+			if(player.dir==3 && escenario[y][x-1]==7 && escenario[yn][x-1]==7 )//izquierda
+				dibujabomba(x-1,y,0);
+		}
+
+		function resetpalyer()
+		{
+			if(!player.die)
+			{
+				dib_res(res);			
+				player.die=1;
+				player.lives=player.lives-1;
+				player.x=32;
+				player.y=32;
+				player.dir=0;
+				actualFrame=0;
+				dibujascore(null);
+				if(player.lives==0)
+				{
+					audio[1].pause();
+					audio[5].play();
+					audio[4].play();
+					setTimeout(function(){failgame();},400);
+					return true;
+				}
+				else
+					setTimeout(function(){	player.die=0;	dibujaP1();}, 800);
+				audio[1].pause();
+				audio[5].play();
+				setTimeout(function(){	audio[1].play(); },1000);
+				return false;
+			}
+		}
+
+		function destruccion(y,x)
+		{
+			if(y==13 && x==1)
+			{
+				escenario[y][x]=56;
+				//alert(escenario[y][x]+"  "+y+" "+x);
+			}
+			else
+				escenario[y][x]=7;
+			var tile = escenario[y][x];
+			var	tileRow = (tile / numTilesImagen) | 0;
+			var	tileCol = (tile % numTilesImagen) | 0;	
+			context.drawImage(fondo, (tileCol * tamTile), (tileRow * tamTile), tamTile,tamTile, (x * tamTile), (y * tamTile), tamTile, tamTile);
+		}
+
+		function dibujabomba(x,y,bomba)
+		{
+			switch(bomba)
+			{
+				case 0: case 1: case 2: case 3:
+					escenario[y][x]=0;
+					context.drawImage(fondo, 7*tamTile , 0 ,tamTile,tamTile, x*tamTile , y*tamTile ,tamTile,tamTile);
+					context.drawImage(fondo, (3+bomba)*tamTile , 7*tamTile ,tamTile,tamTile, x*tamTile , y*tamTile ,tamTile,tamTile);
+					setTimeout(function(){dibujabomba(x,y,bomba+1);},400);
+				break;
+				case 4:
+					if(colisionexplocion(x,y))		return;
+					context.drawImage(fondo, 2*tamTile , 7*tamTile ,tamTile,tamTile, x*tamTile , y*tamTile ,tamTile,tamTile);
+					setTimeout(function(){ destruccion(y,x);  },400);
+
+					if(escenario[y][x+1]==7 || escenario[y][x+1]==57)
+					{
+						if(escenario[y][x+1]==57)
+							player.puntuacion+=10;
+						if(colisionexplocion(x+1,y))	
+							return;
+						context.drawImage(fondo, 2*tamTile , 7*tamTile ,tamTile,tamTile, (x+1)*tamTile , y*tamTile ,tamTile,tamTile);
+						setTimeout(function(){destruccion(y,x+1); },400);
+						if(escenario[y][x+1]==7 && (escenario[y][x+2]==7 || escenario[y][x+2]==57))
+						{
+							if(escenario[y][x+2]==57)
+								player.puntuacion+=10;
+							if(colisionexplocion(x+2,y))	
+								return;
+							context.drawImage(fondo, 2*tamTile , 7*tamTile ,tamTile,tamTile, (x+2)*tamTile , y*tamTile ,tamTile,tamTile);
+							setTimeout(function(){destruccion(y,x+2); },400);
+						}
+					}
+					if(escenario[y][x-1]==7 || escenario[y][x-1]==57)
+					{
+						if(escenario[y][x-1]==57)
+							player.puntuacion+=10;
+						if(colisionexplocion(x-1,y))		
+							return;
+						context.drawImage(fondo, 2*tamTile , 7*tamTile ,tamTile,tamTile, (x-1)*tamTile , y*tamTile ,tamTile,tamTile);
+						setTimeout(function(){destruccion(y,x-1); },400);
+						if( escenario[y][x-1]==7 && (escenario[y][x-2]==7 || escenario[y][x-2]==57))
+						{
+							if(escenario[y][x-2]==57)
+								player.puntuacion+=10;
+							if(colisionexplocion(x-2,y))	
+								return;
+							context.drawImage(fondo, 2*tamTile , 7*tamTile ,tamTile,tamTile, (x-2)*tamTile , y*tamTile ,tamTile,tamTile);
+							setTimeout(function(){destruccion(y,x-2);  },400);
+						}
+					}
+					if(escenario[y+1][x]==7 || escenario[y+1][x]==57)
+					{
+						if(escenario[y+1][x]==57)
+							player.puntuacion+=10;
+						if(colisionexplocion(x,y+1))	
+							return;
+						context.drawImage(fondo, 2*tamTile , 7*tamTile ,tamTile,tamTile, x*tamTile , (y+1)*tamTile ,tamTile,tamTile);
+						setTimeout(function(){destruccion(y+1,x); },400);
+						if(escenario[y+1][x]==7 && (escenario[y+2][x]==7 || escenario[y+2][x]==57))
+						{
+							if(escenario[y+2][x]==57)
+								player.puntuacion+=10;
+							if(colisionexplocion(x,y+2))	
+								return;
+							context.drawImage(fondo, 2*tamTile , 7*tamTile ,tamTile,tamTile, x*tamTile , (y+2)*tamTile ,tamTile,tamTile);
+							setTimeout(function(){destruccion(y+2,x); },400);
+						}
+					}
+					if(escenario[y-1][x]==7 || escenario[y-1][x]==57)
+					{
+						if(escenario[y-1][x]==57)
+							player.puntuacion+=10;
+						if(colisionexplocion(x,y-1))	
+							return;
+						context.drawImage(fondo, 2*tamTile , 7*tamTile ,tamTile,tamTile, x*tamTile , (y-1)*tamTile ,tamTile,tamTile);
+						setTimeout(function(){destruccion(y-1,x) ; },400);
+						if( escenario[y-1][x]==7 && (escenario[y-2][x]==7 || escenario[y-2][x]==57))
+						{
+							if(escenario[y-2][x]==57)
+								player.puntuacion+=10;
+							if(colisionexplocion(x,y-2))	
+								return;
+							context.drawImage(fondo, 2*tamTile , 7*tamTile ,tamTile,tamTile, x*tamTile , (y-2)*tamTile ,tamTile,tamTile);
+							setTimeout(function(){destruccion(y-2,x); },400);
+						}
+					}
+					audio[4].play();
+					dibujascore(null);
+				break;
+			}
+		}
+
+		function dibujaescenario ()
+		{
+			context.clearRect(0,0,canvas.width,canvas.height);
+			for(var r = 0; r < filas; r++)
+			{
+				for(var c = 0; c < columnas; c++)
+				{
+					var tile = escenario[r][c];
+					var	tileRow = (tile / numTilesImagen) | 0;
+					var	tileCol = (tile % numTilesImagen) | 0;	
+					context.drawImage(fondo, (tileCol * tamTile), (tileRow * tamTile), tamTile,tamTile, (c * tamTile), (r * tamTile), tamTile, tamTile);
+				}
+			}
+		}
+
+		function dibujascore(ini)
+		{
+			if(ini)
+			{
+				context.fillStyle = "#000000"; 
+				text="Vidas" ;
+				textt="Puntuación";
+				context.fillText(textt,615,50);
+				context.fillText(text,615,150);
+			}
+			else
+			{
+				context.clearRect(615,55,180,50);
+				context.clearRect(615,155,180,50);
+			}
+			context.fillStyle = "#ff0000";
+			context.fillText("  "+player.puntuacion,615,85);
+			context.fillStyle = "#0000ff";
+			context.fillText("  "+player.lives,615,185);
+		}
+
+		function dibujaP1()
+		{
+			if(!player.die)
+			{
+				dib_res(res);
+				for(var i=0;i<enemigos.length;i++)
+					if(!enemigos[i].die)
+					 	if(colisionplayer(enemigos[i]))
+					 		return;
+				respalda(player,res,alto);
+				context.drawImage(p1,ancho*actualFrame,alto*player.dir,ancho,alto,player.x,player.y-alto,ancho*2,alto*2);
+			}
+		}
+
+		function dibujaenemigos()
+		{
+			for(var i=0;i<enemigos.length;i++)
+			{
+				if(!enemigos[i].die)
+				{
+					dib_res(resene[i]);
+					respalda(enemigos[i],resene[i],0);
+					context.drawImage(fondo,tamTile*enemigos[i].dir,tamTile*5,enemigos[i].ancho,enemigos[i].alto,enemigos[i].x,enemigos[i].y,enemigos[i].ancho,enemigos[i].alto);
+					if(colisionplayer(enemigos[i]))
+					 		return;
+				}
+				else
+					if(enemigos[i].die==1)
+					{
+						enemigos[i].die++;
+						context.drawImage(fondo,tamTile*7,0,tamTile,tamTile,enemigos[i].x,enemigos[i].y,tamTile,tamTile);
+					}
+			}
+		}
+
+		function respalda(obj,res,alto)
+		{
+			res.img=context.getImageData(obj.x, obj.y-alto, tamTile, tamTile+alto);
+			res.x=obj.x;
+			res.y=obj.y-alto;
+		}
+		function dib_res(obj)
+		{
+			if(obj.img!=null)
+				context.putImageData(obj.img, obj.x, obj.y);
+		}
+
+		function intersec(obj,x,y)
+		{
+			if( (escenario[((obj.y+y) / tamTile) | 0][((obj.x+x) / tamTile) | 0])!=7)
+				return false;
+			if( (escenario[((obj.y+y+obj.alto) / tamTile) | 0][((obj.x+x+obj.ancho) / tamTile) | 0])!=7)
+				return false;
+			if( (escenario[((obj.y+y) / tamTile) | 0][((obj.x+x+obj.ancho) / tamTile) | 0])!=7)
+				return false;
+			if( (escenario[((obj.y+y+obj.alto) / tamTile) | 0][((obj.x+x) / tamTile) | 0])!=7)
+				return false;
+			return true;
+		}
+
+		function colisionexplocion(x,y)
+		{
+			var xp=(player.x / tamTile) | 0,
+				yp=(player.y / tamTile) | 0,
+				xpn=((player.x + player.ancho)/ tamTile) | 0,
+				ypn=((player.y + player.alto)/ tamTile) | 0;
+			if( (xp==x && yp==y) )
+				if(resetpalyer())
+					return true;
+			if( (xpn==x && ypn==y) )
+					if(resetpalyer())
+						return true;
+
+			for(var i=0;i<enemigos.length;i++)
+			{
+				if(enemigos[i].die)
+					continue;
+				var xp=(enemigos[i].x / tamTile) | 0,
+					yp=(enemigos[i].y / tamTile) | 0,
+					xpn=((enemigos[i].x + enemigos[i].ancho)/ tamTile) | 0,
+					ypn=((enemigos[i].y + enemigos[i].alto)/ tamTile) | 0;
+				if(xp==x && yp==y) 
+				{
+					player.puntuacion+=20;
+					enemigos[i].die=1;
+				}
+				else
+					if(xpn==x && ypn==y) 
+					{
+						player.puntuacion+=20;
+						enemigos[i].die=1;
+					}
+			}
+			return false;
+		}
+
+		function colisionplayer(enemigos)
+		{
+				var filp=(player.y/tamTile)|0,	
+					colp=(player.x/tamTile)|0,	
+					file=(enemigos.y/tamTile)|0,	
+					cole=(enemigos.x/tamTile)|0;
+
+				var filpn=((player.y+player.alto)/tamTile)|0,	
+					colpn=((player.x+player.ancho)/tamTile)|0,	
+					filen=((enemigos.y+enemigos.alto)/tamTile)|0,	
+					colen=((enemigos.x+enemigos.ancho)/tamTile)|0;
+				if( (filp==file && colp==cole) || (filpn==file && colpn==cole) || (filpn==file && colp==cole) || (filp==file && colpn==cole))
+				{
+					resetpalyer();
+					return true;
+				}
+				else
+					if( (filpn==filen && colpn==cole) || (filpn==filen && colp==cole) || (filp==filen && colpn==cole))
+					{
+						resetpalyer();
+						return true;
+					}
+					else
+						if( (filpn==filen && colpn==colen) || (filpn==filen && colp==colen) || (filp==filen && colpn==colen))
+						{
+							resetpalyer();
+							return true;
+						}
+				return false;
+		}
+
+		function ganaste(obj,x,y)
+		{
+			if( (escenario[((obj.y+y) / tamTile) | 0][((obj.x+x) / tamTile) | 0])==56)
+				return true;
+			if( (escenario[((obj.y+y+obj.alto) / tamTile) | 0][((obj.x+x+obj.ancho) / tamTile) | 0])==56)
+				return true;
+			if( (escenario[((obj.y+y) / tamTile) | 0][((obj.x+x+obj.ancho) / tamTile) | 0])==56)
+				return true;
+			if( (escenario[((obj.y+y+obj.alto) / tamTile) | 0][((obj.x+x) / tamTile) | 0])==56)
+				return true;
+			return false;
+		}
+
+		window.onkeydown=function(e)
+		{
+			var tecla=e.keyCode;
+			
+			if(!gameover && !player.die)
+			{
+				if (tecla == 39)//derecha
+					if(ganaste(player,paso,0))
+					{
+						audio[1].pause();
+						finishgame();
+						return;
+					}
+					else
+						if(player.dir==2 && intersec(player,paso,0))
+						{
+							actualFrame=(actualFrame+1)%9;
+							player.x=player.x+paso;
+						}
+						else
+						{
+							actualFrame=0;
+							player.dir=2;
+						}
+				if (tecla == 40)//abajo
+					if(ganaste(player,0,paso))
+					{
+						audio[1].pause();
+						finishgame();
+						return;
+					}
+					else
+						if(player.dir==0 && intersec(player,0,paso))
+						{
+							actualFrame=(actualFrame+1)%9;
+							player.y=player.y+paso;
+						}
+						else
+						{
+							actualFrame=0;
+							player.dir=0;
+						}
+				if (tecla == 38)//arriba
+					if(ganaste(player,0,-paso))
+					{
+						audio[1].pause();
+						finishgame();
+						return;
+					}
+					else
+						if(player.dir==1 && intersec(player,0,-paso))
+						{
+							actualFrame=(actualFrame+1)%9;
+							player.y=player.y-paso;
+						}
+						else
+						{
+							actualFrame=0;
+							player.dir=1;
+						}
+				if (tecla == 37)//izquierda
+					if(ganaste(player,-paso,0))
+					{
+						audio[1].pause();
+						finishgame();
+						return;
+					}
+					else
+						if(player.dir==3 && intersec(player,-paso,0))
+						{
+							actualFrame=(actualFrame+1)%9;
+							player.x=player.x-paso;
+						}
+						else
+						{
+							actualFrame=0;
+							player.dir=3;
+						}
+				if (tecla == 65)//A
+					bomba();
+				dibujaP1();
+			}
+
+			if (tecla== 13)//enter
+				if(gameover)
+				{
+					audio[0].pause();
+					audio[3].pause();
+					audio[2].pause();
+					audio[1].play();
+					inicio();
+				}
+		}
+
+		function i_a_enemigos()
+		{
+			//alert("ia inicio");
+			for(var i=0;i< enemigos.length;i++)
+				if(!enemigos[i].die)
+				{
+					if(enemigos[i].dir==0)
+						if(intersec(enemigos[i],0,-paso))
+						{
+							enemigos[i].y=enemigos[i].y-paso;
+							continue
+						}
+					if(enemigos[i].dir==2)
+						if(intersec(enemigos[i],-paso,0))
+						{
+							enemigos[i].x=enemigos[i].x-paso;
+							continue
+						}
+					if(enemigos[i].dir==4)
+						if(intersec(enemigos[i],0,paso))
+						{
+							enemigos[i].y=enemigos[i].y+paso;
+							continue
+						}
+					if(enemigos[i].dir==6)
+						if(intersec(enemigos[i],paso,0))
+						{
+							enemigos[i].x=enemigos[i].x+paso;
+							continue
+						}
+					enemigos[i].dir=(enemigos[i].dir+2)%8
+				}
+			dibujaenemigos();
+		}
+	};
+
+</script>
+<title>Bomberman::Angel Ortiz Olivera</title>
+</head>
+
+
+<body background="img/fondo.jpg">
+	<div align="center">
+		<canvas id="miCanvas" width="800" height="480">	El navegador no soporta canvas	</canvas>
+	</div>
+</body>
+
+
+</html>

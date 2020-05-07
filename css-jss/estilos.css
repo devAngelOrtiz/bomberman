@@ -1,0 +1,305 @@
+/*Logueo del administrador*/
+
+*:focus { 
+	outline: none; 
+}
+
+.textazul{
+	color: #3498DB;
+	font: small-caps 100%/200% serif; 
+}
+
+.textrojo{
+	color: #ff0000;
+	font: small-caps 100%/200% serif; 
+}
+
+
+
+.hand{
+	cursor: pointer;
+}
+
+.texthistorial{
+	font: small-caps 100%/200% serif; 
+}
+
+.ico-left{
+	width: 40px;
+	height: 40px;
+}
+
+.ico-left:hover{
+	width: 45px;
+	height: 45px;
+}
+
+table tr.fondoC {
+    background-color:#34495E;
+    color:#ffffff;
+    font-size: 110%;
+    text-align: center;
+}
+
+table tr.center {
+    text-align: center;
+}
+
+table .hist{
+    height: 550px;
+}
+
+.chica
+{
+	background: url(../img/compra.png) 50px 50px no-repeat;
+	background-size: cover;
+	margin-right: 20px;
+	float: right;
+	height: 40px;
+	width: 40px;
+
+}
+.chica:hover
+{
+	float: right;
+	height: 45px;
+	width: 45px;
+}
+
+.botonCS
+{
+	float: right;
+	font-size: 110%;
+	color: #ffffff;
+	width: 150px;
+	background-color: #F58B1D;
+	margin-right: 20px;
+	margin-top: 5px;
+	padding-bottom: 5px;
+	padding-top: 5px;
+	border: 0px;
+	border-radius: 10px;
+}
+.botonCS:hover
+{
+	font-size: 120%;
+}
+
+.botonH
+{
+	float: right;
+	font-size: 110%;
+	color: #ffffff;
+	width: 110px;
+	background-color: #3498DB;
+	margin-right: 20px;
+	margin-top: 5px;
+	padding-bottom: 5px;
+	padding-top: 5px;
+	border: 0px;
+	border-radius: 10px;
+}
+.botonH:hover
+{
+	font-size: 120%;
+}
+
+.texttitulo{
+	font: oblique bold 150% cursive;
+	margin-left: 9px;
+}
+
+.textscore{
+	font: 170% sans-serif; 
+	float: left;
+	margin-left: 9px;
+}
+
+.textcompra{
+	font: 170% sans-serif; 
+	margin-left: 9px;
+}
+
+
+.player{
+	padding-top: 10px;
+	margin-top: 10px;
+	margin-bottom: 20px;
+	margin-right: 2%;
+	margin-left: 2%;
+	border-width: 5px;
+	border-style: solid;
+	border-radius: 5px;
+	border-color: #000000;
+	background-color: #ffffff;
+	opacity: .7;
+	width: 96%;
+	height: 50px
+}
+
+.contenido{
+	margin-left: 10px;
+	margin-top: 10px;
+	border-width: 5px;
+	border-style: solid;
+	border-radius: 5px;
+	border-color: #000000;
+	background-color: #ffffff;
+	width: 250px;
+	height: 40px
+}
+.canvas{
+	float:left;
+	margin-left: 5%
+}
+.divscore{
+	opacity: .8;
+	float:left;
+}
+.divhistorial{
+	opacity: .8;
+	float:right;
+	margin-right: 2%;
+	margin-top: 10px;
+	border-width: 5px;
+	border-style: solid;
+	border-radius: 5px;
+	border-color: #000000;
+	background-color: #ffffff;
+	width: 350px;
+	height: 460px;
+	overflow: scroll;
+}
+
+.fondoGame{
+	background: url(../img/fondo.jpg) no-repeat center center fixed;
+	-webkit-background-size: cover;
+	-moz-background-size: cover;
+	-o-background-size: cover;
+	background-size: cover;
+}
+
+/*ERROR*/
+.login span.text{
+	float: right;
+}
+.texterror{
+	color:#ff0000;
+	font-size: 120%;
+}
+
+.fondo {
+	background: #000000;
+}
+
+.logo{
+	display:block;
+	text-align:center;
+}
+.login{
+	width: 30%;
+	height: 260px;
+	margin-top: 3%;
+	margin-left: 35%;
+	background: #DADADA;
+	border-radius: 20px;
+}
+
+.login-table{
+	margin-left: 10%;
+	margin-left: 10%;
+	width: 82%;
+}
+
+.login-text{
+	font-size: 150%;
+	color: #000000;
+	text-align: center;
+	width: 100%;
+	padding-top: 5%;
+}
+
+.login-ico{
+	width: 23px;
+	height: 23px;
+	background: #000000;
+	padding-bottom: 5px;
+	padding-top: 5px;
+	padding-right: 10px;
+	padding-left: 10px;
+}
+
+.entrada-texto {
+	font-size: 100%;
+	width: 90%;
+	padding-bottom: 5px;
+	padding-top: 5px;
+	padding-left: 5px;
+}
+
+.boton
+{
+	font-size: 110%;
+	color: #ffffff;
+	width: 30%;
+	margin-top: 5%;
+	margin-left: 35%;
+	background-color: #F58B1D;
+	padding-bottom: 5px;
+	padding-top: 5px;
+	border: 0px;
+}
+.boton:hover
+{
+	font-size: 120%;
+	color: #ffffff;
+	width: 32%;
+	margin-top: 5%;
+	margin-left: 34%;
+	background-color: #ED7C30;
+	padding-bottom: 5px;
+	padding-top: 5px;
+	border: 0px;
+}
+
+.aceptar
+{
+	font-size: 110%;
+	color: #ffffff;
+	width: 150px;
+	height: 42px;
+	margin-top: 10px;
+	margin-left: 10px;
+	background-color: #3498DB;
+	padding-bottom: 5px;
+	padding-top: 5px;
+	border: 0px;
+}
+.aceptar:hover
+{
+	font-size: 120%;
+}
+.cancelar
+{
+	font-size: 110%;
+	color: #ffffff;
+	width: 150px;
+	height: 42px;
+	margin-top: 10px;
+	margin-left: 10px;
+	background-color: #ff0000;
+	padding-bottom: 5px;
+	padding-top: 5px;
+	border: 0px;
+}
+.cancelar:hover
+{
+	font-size: 120%;
+}
+
+.registrar{
+	margin-right: 20px;
+	font-size: 130%;
+	text-align:right;
+	color:#00ff00;
+}
